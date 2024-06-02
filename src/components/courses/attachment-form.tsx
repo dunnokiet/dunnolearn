@@ -128,20 +128,20 @@ export default function AttachmentForm({ course }: { course: any }) {
   return (
     <CardContent>
       <Label>Attachments</Label>
-      <div className="flex items-center space-x-2 ">
-        {!isEdditing && (
-          <Button
-            onClick={toggleEddit}
-            type="button"
-            variant="outline"
-            className="w-full"
-          >
-            <DocumentPlusIcon className="h-4 w-4 mr-2" />
-            Add
-          </Button>
-        )}
+      {!isEdditing && (
+        <Button
+          onClick={toggleEddit}
+          type="button"
+          variant="outline"
+          className="w-full"
+        >
+          <DocumentPlusIcon className="h-4 w-4 mr-2" />
+          Add
+        </Button>
+      )}
 
-        {isEdditing && (
+      {isEdditing && (
+        <>
           <Button
             onClick={toggleEddit}
             type="button"
@@ -150,11 +150,17 @@ export default function AttachmentForm({ course }: { course: any }) {
           >
             Cancel
           </Button>
-        )}
-      </div>
+          <FileUpload
+            endpoint="courseAttachment"
+            onChange={(url) => {
+              if (url) onSubmit({ URL: url });
+            }}
+          />
+        </>
+      )}
       {!isEdditing && (
         <>
-          {course.attachments.length == 0 && <p>No attackment</p>}
+          {course.attachments.length == 0 && <p>No attackments</p>}
           {course.attachments.length > 0 && (
             <Table>
               <TableHeader>
@@ -168,7 +174,7 @@ export default function AttachmentForm({ course }: { course: any }) {
               <TableBody>
                 {course.attachments.map((attachment: any) => (
                   <TableRow key={attachment.id}>
-                    <TableCell className="font-medium">
+                    <TableCell className="font-medium w-full">
                       {attachment.name}
                     </TableCell>
                     <TableCell>
@@ -202,31 +208,6 @@ export default function AttachmentForm({ course }: { course: any }) {
             </Table>
           )}
         </>
-        // <>
-        //   {course.attachments.length == 0 && <p>No attackment</p>}
-        //   {course.attachments.length > 0 && (
-        //     <div className="space-y-2">
-        //       {course.attachments.map((attachment: any) => (
-        //         <div
-        //           key={attachment.id}
-        //           className="flex items-center p-3 w-full bg-sky-100 border-sky-200 border text-sky-700 rounded-md"
-        //         >
-        //           <PaperClipIcon className="h-4 w-4 mr-2 flex-shrink-0" />
-        //         </div>
-        //       ))}
-        //     </div>
-        //   )}
-        // </>
-      )}
-      {isEdditing && (
-        <div>
-          <FileUpload
-            endpoint="courseAttachment"
-            onChange={(url) => {
-              if (url) onSubmit({ URL: url });
-            }}
-          />
-        </div>
       )}
     </CardContent>
   );

@@ -1,7 +1,7 @@
 import { db } from "@/db";
-import { attachments, courses } from "@/db/schema";
+import { attachments, courses, modules } from "@/db/schema";
 import { NextResponse } from "next/server";
-import { eq, and } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 import { createClient } from "@/lib/supabase/server";
 
 export async function POST(req: Request, { params }: { params: { id: any } }) {
@@ -13,7 +13,7 @@ export async function POST(req: Request, { params }: { params: { id: any } }) {
         if (!user)
             return new NextResponse("Unthorized", { status: 401 })
 
-        const { URL } = await req.json();
+        const { title } = await req.json();
 
         const course = await db.query.courses.findFirst({
             where: and(eq(courses.id, params.id), eq(courses.userId, user.id)),
@@ -22,15 +22,22 @@ export async function POST(req: Request, { params }: { params: { id: any } }) {
         if (!course)
             return new NextResponse("Unthorized", { status: 401 })
 
-        const attachment = await db.insert(attachments).values({
-            URL,
-            name: URL.split("/").pop(),
-            courseId: params.id
+        const lastModule = await db.query.modules.findFirst({
+            where: eq(courses.id, params.id),
+            orderBy: [desc(modules.position)],
+        });
+
+        const newPosition = lastModule ? lastModule?.position! + 1 : 1;
+
+        const newModule = await db.insert(modules).values({
+            title,
+            courseId: params.id,
+            position: newPosition
         })
 
-        return NextResponse.json(attachment);
+        return NextResponse.json(newModule);
     } catch (error) {
-        console.log("[COURSE_ATTACHMENTS]", error);
+        console.log("[COURSE_MODULES]", error);
         return new NextResponse("Internal Error", { status: 500 });
     }
 }

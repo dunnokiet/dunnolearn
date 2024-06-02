@@ -13,10 +13,8 @@ export async function DELETE(req: Request, { params }: { params: { id: any, atta
         if (!user)
             return new NextResponse("Unthorized", { status: 401 })
 
-        const userId = user.id;
-
         const course = await db.query.courses.findFirst({
-            where: and(eq(courses.id, params.id), eq(courses.userId, userId)),
+            where: and(eq(courses.id, params.id), eq(courses.userId, user.id)),
         });
 
         if (!course)

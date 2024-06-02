@@ -1,9 +1,16 @@
-import { integer, pgTable, serial, text, timestamp, uuid, boolean, index } from 'drizzle-orm/pg-core';
+import { integer, pgTable, pgSchema, serial, varchar, text, timestamp, uuid, boolean, index } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
+
+export const authSchema = pgSchema('auth');
+
+export const users = authSchema.table('users', {
+    id: uuid('id').primaryKey(),
+    email: varchar('email'),
+});
 
 export const courses = pgTable('courses', {
     id: uuid('id').primaryKey().defaultRandom(),
-    userId: uuid('userId'),
+    userId: uuid('userId').references(() => users.id),
     title: text('title'),
     description: text('description'),
     imageURL: text('imageURL'),
@@ -37,10 +44,10 @@ export const modules = pgTable('modules', {
     videoURL: text('videoURL'),
     position: integer('position'),
 
-    courseId: uuid('courseId').references(() => courses.id),
+    courseId: uuid('courseId').references(() => courses.id, { onDelete: 'cascade' }),
 })
 
-export const lessons = pgTable('lessons', {
+export const videos = pgTable('videos', {
     id: uuid('id').primaryKey().defaultRandom(),
     assetId: text('assetId'),
     playbackId: text('playbackId'),
@@ -51,7 +58,7 @@ export const lessons = pgTable('lessons', {
 export const users_lesson = pgTable('users_lesson', {
     id: uuid('id').primaryKey().defaultRandom(),
     userId: text('userId').unique(),
-    lessonId: uuid('lessonId').unique().references(() => lessons.id),
+    videoId: uuid('videoId').unique().references(() => videos.id),
 
     isCompleted: boolean('isCompleted').default(false),
 
@@ -59,10 +66,18 @@ export const users_lesson = pgTable('users_lesson', {
     updatedAt: timestamp('updated_at').$onUpdate(() => new Date()),
 })
 
+export const usersRelations = relations(courses, ({ many }) => ({
+    courses: many(courses),
+}));
+
 export const couresRelations = relations(courses, ({ one, many }) => ({
     attachments: many(attachments),
     modules: many(modules),
 
+    users: one(users, {
+        fields: [courses.userId],
+        references: [users.id],
+    }),
     categories: one(categories, {
         fields: [courses.categoryId],
         references: [categories.id],
@@ -81,7 +96,7 @@ export const categoriesRelations = relations(categories, ({ many }) => ({
 }));
 
 export const modulesRelations = relations(modules, ({ one, many }) => ({
-    lessons: many(lessons),
+    videos: many(videos),
 
     courses: one(courses, {
         fields: [modules.courseId],
@@ -89,12 +104,16 @@ export const modulesRelations = relations(modules, ({ one, many }) => ({
     }),
 }));
 
-export const lessonsRelations = relations(lessons, ({ one }) => ({
+export const videosRelations = relations(videos, ({ one }) => ({
     modules: one(modules, {
-        fields: [lessons.moduleId],
+        fields: [videos.moduleId],
         references: [modules.id],
     }),
 }));
+
+
+export type SelectCourse = typeof courses.$inferSelect;
+export type SelectCategory = typeof categories.$inferSelect;
 
 
 // // This is your Prisma schema file,

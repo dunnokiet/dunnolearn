@@ -1,12 +1,12 @@
 import { db } from "@/db";
 import { redirect } from "next/navigation";
-import { eq, asc, desc } from "drizzle-orm";
-import { courses, categories, attachments } from "@/db/schema";
+import { eq, asc, desc, and } from "drizzle-orm";
+import { courses, categories, attachments, modules } from "@/db/schema";
 import { EditForm } from "@/components/courses/edit-form";
 import { createClient } from "@/lib/supabase/server";
 import { CustomizeCourse } from "@/components/courses/customize-course";
 
-export default async function CourseID({ params }: { params: { id: any } }) {
+export default async function CourseId({ params }: { params: { id: any } }) {
   const supabase = createClient();
 
   const {
@@ -16,8 +16,11 @@ export default async function CourseID({ params }: { params: { id: any } }) {
   if (!user) return redirect("/");
 
   const course = await db.query.courses.findFirst({
-    where: eq(courses.id, params.id),
+    where: and(eq(courses.id, params.id), eq(courses.userId, user.id)),
     with: {
+      modules: {
+        orderBy: [desc(modules.position)],
+      },
       attachments: {
         orderBy: [desc(attachments.createdAt)],
       },

@@ -105,7 +105,6 @@ export default function TitleForm({ course }: { course: any }) {
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />

@@ -3,7 +3,8 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -97,7 +98,6 @@ export function CreateForm() {
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -106,8 +106,8 @@ export function CreateForm() {
               <Button disabled={!isValid || isSubmitting} type="submit">
                 Continue
               </Button>
-              <Button type="button" variant="ghost">
-                Cancel
+              <Button asChild type="button" variant="destructive">
+                <Link href="/courses/">Cancel</Link>
               </Button>
             </CardFooter>
           </form>

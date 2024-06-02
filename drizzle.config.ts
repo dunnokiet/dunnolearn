@@ -7,5 +7,6 @@ export default defineConfig({
     out: "./src/db/drizzle",
     dbCredentials: {
         url: process.env.POSTGRES_URL!
-    }
+    },
+    schemaFilter: ["public"],
 });

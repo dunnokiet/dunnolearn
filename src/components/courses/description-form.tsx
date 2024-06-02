@@ -105,7 +105,6 @@ export default function DescriptionForm({ course }: { course: any }) {
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
