@@ -11,6 +11,10 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import Categories from "@/components/search/categories";
+import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import SearchInput from "@/components/search/search-input";
 
 export default async function SearchPage() {
   const data = await db.query.categories.findMany({
@@ -20,9 +24,11 @@ export default async function SearchPage() {
   return (
     <div className="flex flex-col">
       <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
-        <h1 className="text-xl font-semibold">Courses</h1>
+        <SearchInput />
       </header>
-      <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6"></main>
+      <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
+        <Categories items={data} />
+      </main>
     </div>
   );
 }
