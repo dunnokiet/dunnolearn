@@ -1,4 +1,5 @@
 import { SideNav } from "@/components/courses/sidenav";
+import { Suspense } from "react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -6,7 +7,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div className="hidden border-r bg-muted/40 md:block">
         <SideNav />
       </div>
-      {children}
+      <Suspense>{children}</Suspense>
     </div>
   );
 }
