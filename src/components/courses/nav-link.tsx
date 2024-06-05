@@ -4,11 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
-import { ListBulletIcon } from "@heroicons/react/20/solid";
-import { ChartBarIcon } from "@heroicons/react/16/solid";
+import { CompassIcon, ListIcon } from "lucide-react";
 
 const links = [
-  { name: "Courses", href: "/courses", icon: ListBulletIcon },
+  { name: "Courses", href: "/courses", icon: ListIcon },
+  { name: "Browse", href: "/courses/search", icon: CompassIcon },
   //   {
   //     name: "Analytics",
   //     href: "/courses/analytics",
@@ -24,7 +24,7 @@ export function NavLinks() {
       {links.map((link) => {
         const LinkIcon = link.icon;
         return (
-          <Link
+          <a
             key={link.name}
             href={link.href}
             className={cn(
@@ -35,7 +35,7 @@ export function NavLinks() {
           >
             <LinkIcon className="h-4 w-4" />
             {link.name}
-          </Link>
+          </a>
         );
       })}
     </nav>

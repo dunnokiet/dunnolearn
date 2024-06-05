@@ -22,8 +22,6 @@ export async function DELETE(req: Request, { params }: { params: { id: any, atta
 
         const attachment = await db.delete(attachments).where(and(eq(attachments.courseId, params.id), eq(attachments.id, params.attachmentId)))
 
-        console.log(attachment);
-
         return NextResponse.json(attachment);
     } catch (error) {
         console.log("[COURSE_ID_ATTACHMENTS]", error);

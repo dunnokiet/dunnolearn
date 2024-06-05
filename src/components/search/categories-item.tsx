@@ -39,7 +39,7 @@ export default function CategoryItem({
   };
 
   return (
-    <Button onClick={onClick} variant="outline">
+    <Button onClick={onClick} variant={isSelected ? "default" : "outline"}>
       {label}
     </Button>
   );

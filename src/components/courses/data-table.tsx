@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/table";
 import Link from "next/link";
 import { PlusIcon } from "@heroicons/react/24/outline";
+import { useRouter } from "next/router";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

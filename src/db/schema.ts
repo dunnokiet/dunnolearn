@@ -1,7 +1,7 @@
-import { integer, pgTable, pgSchema, serial, varchar, text, timestamp, uuid, boolean, index } from 'drizzle-orm/pg-core';
+import { integer, pgTable, primaryKey, foreignKey, pgSchema, serial, varchar, text, timestamp, uuid, boolean, index } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
-export const authSchema = pgSchema('auth');
+const authSchema = pgSchema('auth');
 
 export const users = authSchema.table('users', {
     id: uuid('id').primaryKey(),
@@ -10,14 +10,13 @@ export const users = authSchema.table('users', {
 
 export const courses = pgTable('courses', {
     id: uuid('id').primaryKey().defaultRandom(),
-    userId: uuid('userId').references(() => users.id),
+    userId: uuid('userId').references(() => users.id, { onDelete: 'cascade' }),
     title: text('title'),
     description: text('description'),
     imageURL: text('imageURL'),
-
+    isPublished: boolean('isPublished').default(false),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').$onUpdate(() => new Date()),
-
     categoryId: uuid('categoryId').references(() => categories.id)
 });
 
@@ -30,40 +29,40 @@ export const attachments = pgTable('attachments', {
     id: uuid('id').primaryKey().defaultRandom(),
     name: text('name').unique(),
     URL: text('URL'),
-
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').$onUpdate(() => new Date()),
-
-    courseId: uuid('courseId').references(() => courses.id),
+    courseId: uuid('courseId').references(() => courses.id, { onDelete: 'cascade' }),
 });
 
 export const modules = pgTable('modules', {
     id: uuid('id').primaryKey().defaultRandom(),
     title: text('title'),
     description: text('description'),
-    videoURL: text('videoURL'),
-    position: integer('position'),
-
+    order: integer('order'),
+    isPublished: boolean('isPublished').default(false),
     courseId: uuid('courseId').references(() => courses.id, { onDelete: 'cascade' }),
 })
 
-export const videos = pgTable('videos', {
+export const lessons = pgTable('lessons', {
     id: uuid('id').primaryKey().defaultRandom(),
-    assetId: text('assetId'),
-    playbackId: text('playbackId'),
-
-    moduleId: uuid('moduleId').references(() => modules.id),
+    title: text('title'),
+    description: text('description'),
+    videoURL: text('videoURL'),
+    order: integer('order'),
+    isPublished: boolean('isPublished').default(false),
+    moduleId: uuid('moduleId').references(() => modules.id, { onDelete: 'cascade' }),
 })
 
-export const users_lesson = pgTable('users_lesson', {
-    id: uuid('id').primaryKey().defaultRandom(),
-    userId: text('userId').unique(),
-    videoId: uuid('videoId').unique().references(() => videos.id),
-
+export const users_process = pgTable('users_process', {
+    userId: uuid('userId').references(() => users.id),
+    lessonId: uuid('lessonId').references(() => lessons.id),
     isCompleted: boolean('isCompleted').default(false),
-
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').$onUpdate(() => new Date()),
+}, (table) => {
+    return {
+        pk: primaryKey({ columns: [table.userId, table.lessonId] }),
+    }
 })
 
 export const usersRelations = relations(courses, ({ many }) => ({
@@ -96,18 +95,25 @@ export const categoriesRelations = relations(categories, ({ many }) => ({
 }));
 
 export const modulesRelations = relations(modules, ({ one, many }) => ({
-    videos: many(videos),
-
+    lessons: many(lessons),
     courses: one(courses, {
         fields: [modules.courseId],
         references: [courses.id],
     }),
 }));
 
-export const videosRelations = relations(videos, ({ one }) => ({
+export const lessonsRelations = relations(lessons, ({ one, many }) => ({
+    users_process: many(users_process),
     modules: one(modules, {
-        fields: [videos.moduleId],
+        fields: [lessons.moduleId],
         references: [modules.id],
+    }),
+}));
+
+export const usersLessonRelations = relations(users_process, ({ one }) => ({
+    lessons: one(lessons, {
+        fields: [users_process.lessonId],
+        references: [lessons.id],
     }),
 }));
 

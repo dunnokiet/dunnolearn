@@ -101,7 +101,7 @@ export default function LoginForm() {
                   )}
                 />
                 <Button type="submit" className="w-full">
-                  Create an account
+                  Login
                 </Button>
               </div>
               <div className="mt-4 text-center text-sm">

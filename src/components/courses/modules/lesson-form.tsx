@@ -3,7 +3,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useRouter } from "next/navigation";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -38,9 +37,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { FileUpload } from "./file-upload";
-import { Label } from "../ui/label";
-import Component from "../ui/test";
+import { FileUpload } from "@/components/courses/file-upload";
+import { Label } from "@/components/ui/label";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -58,16 +56,23 @@ import {
 } from "@/components/ui/table";
 import { MoreHorizontal } from "lucide-react";
 import { attachments, modules } from "@/db/schema";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import qs from "query-string";
+import { useDebouncedCallback } from "use-debounce";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 const formSchema = z.object({
   title: z.string().min(1),
 });
 
-export default function ModuleForm({ course }: { course: any }) {
+export default function LessonForm({ myModule }: { myModule: any }) {
   const router = useRouter();
   const { toast } = useToast();
   const [isEdditing, setIsEdditing] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -80,19 +85,22 @@ export default function ModuleForm({ course }: { course: any }) {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await fetch(`/api/courses/${course.id}/modules`, {
-        method: "POST",
-        body: JSON.stringify(values),
-        headers: {
-          "content-type": "application/json",
-        },
-      });
+      await fetch(
+        `/api/courses/${myModule.courseId}/modules/${myModule.id}/lessons`,
+        {
+          method: "POST",
+          body: JSON.stringify(values),
+          headers: {
+            "content-type": "application/json",
+          },
+        }
+      );
       setIsEdditing(false);
 
       router.refresh();
 
       toast({
-        description: "Added module",
+        description: "Added lesson",
       });
     } catch {
       toast({
@@ -105,21 +113,58 @@ export default function ModuleForm({ course }: { course: any }) {
   };
 
   const onEdit = async (id: string) => {
-    router.push(`/courses/${course.id}/modules/${id}`);
+    const currentLessonId = searchParams.get("lessonId");
+
+    const isExisting = currentLessonId === id;
+
+    const url = qs.stringifyUrl(
+      {
+        url: pathname,
+        query: {
+          lessonId: id,
+        },
+      },
+      { skipEmptyString: true, skipNull: true }
+    );
+
+    router.push(url);
+
+    setTimeout(() => {
+      location.reload();
+    }, 1000);
   };
 
   const onDelete = async (id: string) => {
     try {
       setDeletingId(id);
 
-      await fetch(`/api/courses/${course.id}/modules/${id}`, {
-        method: "DELETE",
-      });
+      await fetch(
+        `/api/courses/${myModule.courseId}/modules/${myModule.id}/lessons/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      const currentLessonId = searchParams.get("lessonId");
+
+      const isExisting = currentLessonId === id;
+
+      const url = qs.stringifyUrl(
+        {
+          url: pathname,
+          query: {
+            lessonId: null,
+          },
+        },
+        { skipEmptyString: true, skipNull: true }
+      );
+
+      if (isExisting) router.push(url);
 
       router.refresh();
 
       toast({
-        description: "Course updated",
+        description: "Module updated",
       });
     } catch {
       toast({
@@ -136,13 +181,25 @@ export default function ModuleForm({ course }: { course: any }) {
   const toggleEddit = () => {
     setIsEdditing((current) => !current);
     form.reset({ title: "" });
+
+    const url = qs.stringifyUrl(
+      {
+        url: pathname,
+        query: {
+          lessonId: null,
+        },
+      },
+      { skipEmptyString: true, skipNull: true }
+    );
+
+    router.push(url);
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <CardContent>
-          <Label>Modules</Label>
+          <Label>Lessons</Label>
           <div className="flex items-center space-x-2 ">
             {!isEdditing && (
               <Button
@@ -189,8 +246,8 @@ export default function ModuleForm({ course }: { course: any }) {
           </div>
           {!isEdditing && (
             <>
-              {course.modules.length == 0 && <p>No modules</p>}
-              {course.modules.length > 0 && (
+              {myModule.lessons.length == 0 && <p>No lessons</p>}
+              {myModule.lessons.length > 0 && (
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -201,10 +258,10 @@ export default function ModuleForm({ course }: { course: any }) {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {course.modules.map((module: any) => (
-                      <TableRow key={module.id}>
+                    {myModule.lessons.map((lesson: any) => (
+                      <TableRow key={lesson.id}>
                         <TableCell className="font-medium w-full">
-                          {module.title}
+                          {lesson.title}
                         </TableCell>
                         <TableCell>
                           <DropdownMenu>
@@ -222,14 +279,14 @@ export default function ModuleForm({ course }: { course: any }) {
                               <DropdownMenuLabel>Actions</DropdownMenuLabel>
                               <DropdownMenuItem
                                 onClick={() => {
-                                  onEdit(module.id);
+                                  onEdit(lesson.id);
                                 }}
                               >
                                 Edit
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 onClick={() => {
-                                  onDelete(module.id);
+                                  onDelete(lesson.id);
                                 }}
                               >
                                 Delete

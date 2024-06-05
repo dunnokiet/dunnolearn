@@ -25,6 +25,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ToastAction } from "@/components/ui/toast";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import {
   CheckIcon,
@@ -32,14 +33,21 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
-import { PgRefreshMaterializedView } from "drizzle-orm/pg-core";
+import Editor from "../../editor";
 
 const formSchema = z.object({
-  title: z.string().min(2),
+  description: z.string().min(1),
 });
 
-export default function TitleForm({ course }: { course: any }) {
+export default function DescriptionForm({
+  myModule,
+  lesson,
+}: {
+  myModule: any;
+  lesson: any;
+}) {
   const router = useRouter();
+
   const { toast } = useToast();
 
   const [isEdditing, setIsEdditing] = useState(false);
@@ -47,7 +55,7 @@ export default function TitleForm({ course }: { course: any }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: course?.title || "",
+      description: lesson?.description || "",
     },
   });
 
@@ -55,19 +63,22 @@ export default function TitleForm({ course }: { course: any }) {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await fetch(`/api/courses/${course.id}`, {
-        method: "PATCH",
-        body: JSON.stringify(values),
-        headers: {
-          "content-type": "application/json",
-        },
-      });
+      await fetch(
+        `/api/courses/${myModule.courseId}/modules/${myModule.id}/lessons/${lesson.id}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify(values),
+          headers: {
+            "content-type": "application/json",
+          },
+        }
+      );
       setIsEdditing(false);
 
       router.refresh();
 
       toast({
-        description: "Course updated",
+        description: "Lesson updated",
       });
     } catch {
       toast({
@@ -81,56 +92,34 @@ export default function TitleForm({ course }: { course: any }) {
 
   const toggleEddit = () => {
     setIsEdditing((current) => !current);
-    form.reset({ title: course?.title });
+    form.reset({ description: lesson?.description });
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <CardContent>
-          <FormLabel>Title</FormLabel>
+          <FormLabel>Description</FormLabel>
           <div className="flex items-center space-x-2">
             <FormField
               control={form.control}
-              name="title"
+              name="description"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input
-                      className="w-56"
-                      disabled={isSubmitting || !isEdditing}
-                      placeholder="Title"
-                      {...field}
-                    />
+                    <Editor {...field} />
                   </FormControl>
                 </FormItem>
               )}
             />
-            {!isEdditing ? (
-              <Button
-                onClick={toggleEddit}
-                type="button"
-                variant="outline"
-                className="w-full"
-              >
-                <PencilSquareIcon className="h-4 w-4 mr-2" />
-                Edit
-              </Button>
-            ) : (
-              <>
-                <Button type="submit" disabled={isSubmitting || !isValid}>
-                  <CheckIcon className="h-4 w-4" />
-                </Button>
-                <Button
-                  onClick={toggleEddit}
-                  type="button"
-                  variant="destructive"
-                >
-                  <XMarkIcon className="h-4 w-4" />
-                </Button>
-              </>
-            )}
           </div>
+          <Button
+            className="mt-2"
+            type="submit"
+            disabled={isSubmitting || !isValid}
+          >
+            Save
+          </Button>
         </CardContent>
       </form>
     </Form>

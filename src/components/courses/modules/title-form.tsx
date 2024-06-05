@@ -31,14 +31,13 @@ import {
   PencilSquareIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { useEffect, useState } from "react";
-import { PgRefreshMaterializedView } from "drizzle-orm/pg-core";
+import { useState } from "react";
 
 const formSchema = z.object({
   title: z.string().min(2),
 });
 
-export default function TitleForm({ course }: { course: any }) {
+export default function TitleForm({ myModule }: { myModule: any }) {
   const router = useRouter();
   const { toast } = useToast();
 
@@ -47,7 +46,7 @@ export default function TitleForm({ course }: { course: any }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: course?.title || "",
+      title: myModule?.title || "",
     },
   });
 
@@ -55,7 +54,7 @@ export default function TitleForm({ course }: { course: any }) {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await fetch(`/api/courses/${course.id}`, {
+      await fetch(`/api/courses/${myModule.courseId}/modules/${myModule.id}`, {
         method: "PATCH",
         body: JSON.stringify(values),
         headers: {
@@ -67,7 +66,7 @@ export default function TitleForm({ course }: { course: any }) {
       router.refresh();
 
       toast({
-        description: "Course updated",
+        description: "Module updated",
       });
     } catch {
       toast({
@@ -81,7 +80,7 @@ export default function TitleForm({ course }: { course: any }) {
 
   const toggleEddit = () => {
     setIsEdditing((current) => !current);
-    form.reset({ title: course?.title });
+    form.reset({ title: myModule?.title });
   };
 
   return (

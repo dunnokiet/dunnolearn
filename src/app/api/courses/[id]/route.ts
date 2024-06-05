@@ -23,3 +23,28 @@ export async function PATCH(req: Request, { params }: { params: { id: any } }) {
         return new NextResponse("Internal Error", { status: 500 });
     }
 }
+
+export async function DELETE(req: Request, { params }: { params: { id: any } }) {
+    try {
+        const supabase = createClient();
+
+        const { data: { user }, } = await supabase.auth.getUser();
+
+        if (!user)
+            return new NextResponse("Unthorized", { status: 401 })
+
+        const course = await db.query.courses.findFirst({
+            where: eq(courses.id, params.id)
+        });
+
+        if (!course)
+            return new NextResponse("Unthorized", { status: 401 })
+
+        const lesson = await db.delete(courses).where(eq(courses.id, params.id))
+
+        return NextResponse.json(lesson);
+    } catch (error) {
+        console.log("[COURSE_ID]", error);
+        return new NextResponse("Internal Error", { status: 500 });
+    }
+}

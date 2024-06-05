@@ -10,6 +10,7 @@ import { DataTable } from "@/components/courses/data-table";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { PlusIcon } from "@heroicons/react/24/outline";
+import { unstable_noStore as noStore } from "next/cache";
 
 export default async function CoursePage() {
   const supabase = createClient();

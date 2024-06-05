@@ -19,7 +19,7 @@ const auth = async () => {
 export const ourFileRouter = {
     courseImage: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } }).middleware(() => auth()).onUploadComplete(() => { }),
     courseAttachment: f(["text", "image", "video", "audio", "pdf"]).middleware(() => auth()).onUploadComplete(() => { }),
-    courseChapter: f({ video: { maxFileSize: "512GB", maxFileCount: 1 } }).middleware(() => auth()).onUploadComplete(() => { }),
+    videoModule: f({ video: { maxFileSize: "512GB", maxFileCount: 1 } }).middleware(() => auth()).onUploadComplete(() => { }),
 
 } satisfies FileRouter;
 

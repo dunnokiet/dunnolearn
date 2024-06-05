@@ -58,7 +58,7 @@ export function CreateForm() {
       })
         .then((response) => response.json())
         .then((json) => {
-          router.push(`/courses/create/${json.id}`);
+          router.push(`/courses/${json.id}`);
         });
 
       toast({
@@ -75,7 +75,7 @@ export function CreateForm() {
   };
 
   return (
-    <div className="basis-1/4 w-96">
+    <div className="basis-1/4 w-96 ">
       <Form {...form}>
         <Card>
           <CardHeader>

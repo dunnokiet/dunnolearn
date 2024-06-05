@@ -26,23 +26,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
-import TitleForm from "./title-form";
-import DescriptionForm from "./description-form";
-import ImageForm from "./image-form";
-import CategoryForm from "./category-form";
-import AttachmentForm from "./attachment-form";
-import ModuleForm from "./module-form";
+import LessonForm from "./lesson-form";
 
-export function CustomizeCourse({ course }: { course: any }) {
+export function CustomizeModule({ myModule }: { myModule: any }) {
   return (
     <div className="w-96">
       <Card>
         <CardHeader>
           <CardTitle>Customize</CardTitle>
-          <CardDescription>Modify courses</CardDescription>
+          <CardDescription>Modify modules</CardDescription>
         </CardHeader>
-        <ModuleForm course={course} />
-        <AttachmentForm course={course} />
+        <LessonForm myModule={myModule} />
       </Card>
     </div>
   );

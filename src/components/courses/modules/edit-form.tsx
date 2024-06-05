@@ -28,21 +28,25 @@ import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 import TitleForm from "./title-form";
 import DescriptionForm from "./description-form";
-import ImageForm from "./image-form";
-import CategoryForm from "./category-form";
-import AttachmentForm from "./attachment-form";
-import ModuleForm from "./module-form";
 
-export function CustomizeCourse({ course }: { course: any }) {
+export function EditForm({ myModule }: { myModule: any }) {
+  const requiredFields = [myModule.title, myModule.description];
+
+  const totalFields = requiredFields.length;
+  const completedFields = requiredFields.filter(Boolean).length;
+
+  const completionText = `(${completedFields} / ${totalFields})`;
   return (
     <div className="w-96">
       <Card>
         <CardHeader>
-          <CardTitle>Customize</CardTitle>
-          <CardDescription>Modify courses</CardDescription>
+          <CardTitle>Setup</CardTitle>
+          <CardDescription>
+            Complete all fields {completionText}
+          </CardDescription>
         </CardHeader>
-        <ModuleForm course={course} />
-        <AttachmentForm course={course} />
+        <TitleForm myModule={myModule} />
+        <DescriptionForm myModule={myModule} />
       </Card>
     </div>
   );

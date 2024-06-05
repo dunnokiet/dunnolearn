@@ -25,20 +25,22 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ToastAction } from "@/components/ui/toast";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import {
   CheckIcon,
   PencilSquareIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { useEffect, useState } from "react";
-import { PgRefreshMaterializedView } from "drizzle-orm/pg-core";
+import { useState } from "react";
 
 const formSchema = z.object({
-  title: z.string().min(2),
+  description: z.string().min(10, {
+    message: "Description must be at least 10 characters.",
+  }),
 });
 
-export default function TitleForm({ course }: { course: any }) {
+export default function DescriptionForm({ myModule }: { myModule: any }) {
   const router = useRouter();
   const { toast } = useToast();
 
@@ -47,7 +49,7 @@ export default function TitleForm({ course }: { course: any }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: course?.title || "",
+      description: myModule?.description || "",
     },
   });
 
@@ -55,7 +57,7 @@ export default function TitleForm({ course }: { course: any }) {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await fetch(`/api/courses/${course.id}`, {
+      await fetch(`/api/courses/${myModule.courseId}/modules/${myModule.id}`, {
         method: "PATCH",
         body: JSON.stringify(values),
         headers: {
@@ -81,25 +83,25 @@ export default function TitleForm({ course }: { course: any }) {
 
   const toggleEddit = () => {
     setIsEdditing((current) => !current);
-    form.reset({ title: course?.title });
+    form.reset({ description: myModule?.description });
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <CardContent>
-          <FormLabel>Title</FormLabel>
+          <FormLabel>Description</FormLabel>
           <div className="flex items-center space-x-2">
             <FormField
               control={form.control}
-              name="title"
+              name="description"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input
-                      className="w-56"
+                    <Textarea
+                      className="w-56 h-20"
                       disabled={isSubmitting || !isEdditing}
-                      placeholder="Title"
+                      placeholder="Description"
                       {...field}
                     />
                   </FormControl>
