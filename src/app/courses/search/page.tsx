@@ -14,7 +14,6 @@ import Categories from "@/components/search/categories";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Suspense, useState } from "react";
-import SearchInput from "@/components/search/search-input";
 
 export default async function SearchPage() {
   const data = await db.query.categories.findMany({
