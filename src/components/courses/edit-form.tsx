@@ -30,6 +30,7 @@ import TitleForm from "./title-form";
 import DescriptionForm from "./description-form";
 import ImageForm from "./image-form";
 import CategoryForm from "./category-form";
+import { Suspense } from "react";
 
 export function EditForm({ course, options }: { course: any; options: any }) {
   const requiredFields = [
@@ -52,16 +53,18 @@ export function EditForm({ course, options }: { course: any; options: any }) {
             Complete all fields {completionText}
           </CardDescription>
         </CardHeader>
-        <TitleForm course={course} />
-        <DescriptionForm course={course} />
-        <ImageForm course={course} />
-        <CategoryForm
-          course={course}
-          options={options.map((option: any) => ({
-            label: option.name,
-            value: option.id,
-          }))}
-        />
+        <Suspense>
+          <TitleForm course={course} />
+          <DescriptionForm course={course} />
+          <ImageForm course={course} />
+          <CategoryForm
+            course={course}
+            options={options.map((option: any) => ({
+              label: option.name,
+              value: option.id,
+            }))}
+          />
+        </Suspense>
       </Card>
     </div>
   );

@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { attachments, courses, modules, lessons } from "@/db/schema";
+import { attachments, users_progress, courses, modules, lessons } from "@/db/schema";
 import { NextResponse } from "next/server";
 import { eq, and, desc } from "drizzle-orm";
 import { createClient } from "@/lib/supabase/server";

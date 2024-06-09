@@ -28,6 +28,7 @@ import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 import TitleForm from "./title-form";
 import DescriptionForm from "./description-form";
+import { Suspense } from "react";
 
 export function EditForm({ myModule }: { myModule: any }) {
   const requiredFields = [myModule.title, myModule.description];
@@ -45,8 +46,10 @@ export function EditForm({ myModule }: { myModule: any }) {
             Complete all fields {completionText}
           </CardDescription>
         </CardHeader>
-        <TitleForm myModule={myModule} />
-        <DescriptionForm myModule={myModule} />
+        <Suspense>
+          <TitleForm myModule={myModule} />
+          <DescriptionForm myModule={myModule} />
+        </Suspense>
       </Card>
     </div>
   );

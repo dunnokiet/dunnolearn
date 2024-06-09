@@ -38,6 +38,11 @@ export function Combobox({ options, value, onChange }: ComboboxProps) {
           role="combobox"
           aria-expanded={open}
           className="w-[200px] justify-between"
+          style={{
+            whiteSpace: "normal",
+            height: "auto",
+            blockSize: "auto",
+          }}
         >
           {value
             ? options.find((option) => option.value == value)?.label

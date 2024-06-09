@@ -16,6 +16,7 @@ import Link from "next/link";
 import VideoForm from "@/components/courses/modules/lessons/video-form";
 import { CustomizeModule } from "@/components/courses/modules/customize-module";
 import { CustomizeLesson } from "@/components/courses/modules/lessons/customize-lesson";
+import { Suspense } from "react";
 
 export default async function ModuleId({
   params,
@@ -52,9 +53,11 @@ export default async function ModuleId({
         <h1 className="text-xl font-semibold">Modules</h1>
       </header>
       <main className="flex flex-1 flex-row gap-4 p-4 lg:gap-6 lg:p-6">
-        <EditForm myModule={myModule} />
-        <CustomizeModule myModule={myModule} />
-        <CustomizeLesson myModule={myModule} />
+        <Suspense>
+          <EditForm myModule={myModule} />
+          <CustomizeModule myModule={myModule} />
+          <CustomizeLesson myModule={myModule} />
+        </Suspense>
       </main>
     </div>
   );

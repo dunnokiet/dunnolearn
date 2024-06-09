@@ -27,6 +27,7 @@ import { Input } from "@/components/ui/input";
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 import LessonForm from "./lesson-form";
+import { Suspense } from "react";
 
 export function CustomizeModule({ myModule }: { myModule: any }) {
   return (
@@ -36,7 +37,9 @@ export function CustomizeModule({ myModule }: { myModule: any }) {
           <CardTitle>Customize</CardTitle>
           <CardDescription>Modify modules</CardDescription>
         </CardHeader>
-        <LessonForm myModule={myModule} />
+        <Suspense>
+          <LessonForm myModule={myModule} />
+        </Suspense>
       </Card>
     </div>
   );

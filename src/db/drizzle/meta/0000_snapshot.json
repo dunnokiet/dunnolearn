@@ -1,5 +1,5 @@
 {
-  "id": "c5fac30c-808b-471b-ae34-f2481a56f216",
+  "id": "3aedb3b1-47bd-4757-9cdb-d961437f85cb",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -140,6 +140,13 @@
           "primaryKey": false,
           "notNull": false
         },
+        "isPublished": {
+          "name": "isPublished",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -193,6 +200,151 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "public.enrolments": {
+      "name": "enrolments",
+      "schema": "",
+      "columns": {
+        "userId": {
+          "name": "userId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "courseId": {
+          "name": "courseId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enrolment_date": {
+          "name": "enrolment_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "enrolments_userId_users_id_fk": {
+          "name": "enrolments_userId_users_id_fk",
+          "tableFrom": "enrolments",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "enrolments_courseId_courses_id_fk": {
+          "name": "enrolments_courseId_courses_id_fk",
+          "tableFrom": "enrolments",
+          "tableTo": "courses",
+          "columnsFrom": [
+            "courseId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "enrolments_userId_courseId_pk": {
+          "name": "enrolments_userId_courseId_pk",
+          "columns": [
+            "userId",
+            "courseId"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.instructors": {
+      "name": "instructors",
+      "schema": "",
+      "columns": {
+        "courseId": {
+          "name": "courseId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "lecturerId": {
+          "name": "lecturerId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "instructors_courseId_courses_id_fk": {
+          "name": "instructors_courseId_courses_id_fk",
+          "tableFrom": "instructors",
+          "tableTo": "courses",
+          "columnsFrom": [
+            "courseId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "instructors_lecturerId_lecturers_id_fk": {
+          "name": "instructors_lecturerId_lecturers_id_fk",
+          "tableFrom": "instructors",
+          "tableTo": "lecturers",
+          "columnsFrom": [
+            "lecturerId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "instructors_courseId_lecturerId_pk": {
+          "name": "instructors_courseId_lecturerId_pk",
+          "columns": [
+            "courseId",
+            "lecturerId"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.lecturers": {
+      "name": "lecturers",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "fullName": {
+          "name": "fullName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "public.lessons": {
       "name": "lessons",
       "schema": "",
@@ -227,6 +379,13 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": false
+        },
+        "isPublished": {
+          "name": "isPublished",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
         },
         "moduleId": {
           "name": "moduleId",
@@ -283,6 +442,13 @@
           "primaryKey": false,
           "notNull": false
         },
+        "isPublished": {
+          "name": "isPublished",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
         "courseId": {
           "name": "courseId",
           "type": "uuid",
@@ -309,8 +475,30 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.users_process": {
-      "name": "users_process",
+    "auth.users": {
+      "name": "users",
+      "schema": "auth",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.users_progress": {
+      "name": "users_progress",
       "schema": "",
       "columns": {
         "userId": {
@@ -348,9 +536,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "users_process_userId_users_id_fk": {
-          "name": "users_process_userId_users_id_fk",
-          "tableFrom": "users_process",
+        "users_progress_userId_users_id_fk": {
+          "name": "users_progress_userId_users_id_fk",
+          "tableFrom": "users_progress",
           "tableTo": "users",
           "schemaTo": "auth",
           "columnsFrom": [
@@ -362,9 +550,9 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "users_process_lessonId_lessons_id_fk": {
-          "name": "users_process_lessonId_lessons_id_fk",
-          "tableFrom": "users_process",
+        "users_progress_lessonId_lessons_id_fk": {
+          "name": "users_progress_lessonId_lessons_id_fk",
+          "tableFrom": "users_progress",
           "tableTo": "lessons",
           "columnsFrom": [
             "lessonId"
@@ -377,8 +565,8 @@
         }
       },
       "compositePrimaryKeys": {
-        "users_process_userId_lessonId_pk": {
-          "name": "users_process_userId_lessonId_pk",
+        "users_progress_userId_lessonId_pk": {
+          "name": "users_progress_userId_lessonId_pk",
           "columns": [
             "userId",
             "lessonId"

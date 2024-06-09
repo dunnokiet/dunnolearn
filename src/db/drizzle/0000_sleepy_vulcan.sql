@@ -20,9 +20,28 @@ CREATE TABLE IF NOT EXISTS "courses" (
 	"title" text,
 	"description" text,
 	"imageURL" text,
+	"isPublished" boolean DEFAULT false,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp,
 	"categoryId" uuid
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "enrolments" (
+	"userId" uuid,
+	"courseId" uuid,
+	"enrolment_date" timestamp DEFAULT now(),
+	CONSTRAINT "enrolments_userId_courseId_pk" PRIMARY KEY("userId","courseId")
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "instructors" (
+	"courseId" uuid,
+	"lecturerId" uuid,
+	CONSTRAINT "instructors_courseId_lecturerId_pk" PRIMARY KEY("courseId","lecturerId")
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "lecturers" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"fullName" text
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "lessons" (
@@ -31,6 +50,7 @@ CREATE TABLE IF NOT EXISTS "lessons" (
 	"description" text,
 	"videoURL" text,
 	"order" integer,
+	"isPublished" boolean DEFAULT false,
 	"moduleId" uuid
 );
 --> statement-breakpoint
@@ -39,16 +59,22 @@ CREATE TABLE IF NOT EXISTS "modules" (
 	"title" text,
 	"description" text,
 	"order" integer,
+	"isPublished" boolean DEFAULT false,
 	"courseId" uuid
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "users_process" (
+CREATE TABLE IF NOT EXISTS "auth"."users" (
+	"id" uuid PRIMARY KEY NOT NULL,
+	"email" varchar
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "users_progress" (
 	"userId" uuid,
 	"lessonId" uuid,
 	"isCompleted" boolean DEFAULT false,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp,
-	CONSTRAINT "users_process_userId_lessonId_pk" PRIMARY KEY("userId","lessonId")
+	CONSTRAINT "users_progress_userId_lessonId_pk" PRIMARY KEY("userId","lessonId")
 );
 --> statement-breakpoint
 DO $$ BEGIN
@@ -70,6 +96,30 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
+ ALTER TABLE "enrolments" ADD CONSTRAINT "enrolments_userId_users_id_fk" FOREIGN KEY ("userId") REFERENCES "auth"."users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "enrolments" ADD CONSTRAINT "enrolments_courseId_courses_id_fk" FOREIGN KEY ("courseId") REFERENCES "public"."courses"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "instructors" ADD CONSTRAINT "instructors_courseId_courses_id_fk" FOREIGN KEY ("courseId") REFERENCES "public"."courses"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "instructors" ADD CONSTRAINT "instructors_lecturerId_lecturers_id_fk" FOREIGN KEY ("lecturerId") REFERENCES "public"."lecturers"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  ALTER TABLE "lessons" ADD CONSTRAINT "lessons_moduleId_modules_id_fk" FOREIGN KEY ("moduleId") REFERENCES "public"."modules"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -82,13 +132,13 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "users_process" ADD CONSTRAINT "users_process_userId_users_id_fk" FOREIGN KEY ("userId") REFERENCES "auth"."users"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "users_progress" ADD CONSTRAINT "users_progress_userId_users_id_fk" FOREIGN KEY ("userId") REFERENCES "auth"."users"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "users_process" ADD CONSTRAINT "users_process_lessonId_lessons_id_fk" FOREIGN KEY ("lessonId") REFERENCES "public"."lessons"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "users_progress" ADD CONSTRAINT "users_progress_lessonId_lessons_id_fk" FOREIGN KEY ("lessonId") REFERENCES "public"."lessons"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

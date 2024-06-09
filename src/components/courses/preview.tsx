@@ -5,14 +5,13 @@ import React, { useMemo } from "react";
 
 import "react-quill/dist/quill.bubble.css";
 
-interface ReviewProps {
-  onChange: (value: string) => void;
+interface PreviewProps {
   value: string;
 }
 
-export default function Review({ onChange, value }: ReviewProps) {
+export default function Preview({ value }: PreviewProps) {
   const ReactQuill = useMemo(
-    () => dynamic(() => import("react-quill"), { ssr: true }),
+    () => dynamic(() => import("react-quill"), { ssr: false }),
     []
   );
 

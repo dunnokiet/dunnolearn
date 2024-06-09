@@ -8,6 +8,7 @@ import { CustomizeCourse } from "@/components/courses/customize-course";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
+import { Suspense } from "react";
 
 export default async function CourseId({ params }: { params: { id: any } }) {
   const supabase = createClient();
@@ -22,7 +23,7 @@ export default async function CourseId({ params }: { params: { id: any } }) {
     where: and(eq(courses.id, params.id), eq(courses.userId, user.id)),
     with: {
       modules: {
-        orderBy: [desc(modules.order)],
+        orderBy: [asc(modules.order)],
       },
       attachments: {
         orderBy: [desc(attachments.createdAt)],
@@ -48,8 +49,10 @@ export default async function CourseId({ params }: { params: { id: any } }) {
         <h1 className="text-xl font-semibold">Courses</h1>
       </header>
       <main className="flex flex-1 flex-row gap-4 p-4 lg:gap-6 lg:p-6">
-        <EditForm course={course} options={options} />
-        <CustomizeCourse course={course} />
+        <Suspense>
+          <EditForm course={course} options={options} />
+          <CustomizeCourse course={course} />
+        </Suspense>
       </main>
     </div>
   );

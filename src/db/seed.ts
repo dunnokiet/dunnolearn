@@ -11,8 +11,6 @@ async function main() {
     try {
         console.log("Seeding database");
 
-        await db.delete(courses);
-        await db.delete(attachments);
         await db.delete(categories);
 
         await db.insert(categories).values(

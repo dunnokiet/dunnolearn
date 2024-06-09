@@ -127,11 +127,7 @@ export default function LessonForm({ myModule }: { myModule: any }) {
       { skipEmptyString: true, skipNull: true }
     );
 
-    router.push(url);
-
-    setTimeout(() => {
-      location.reload();
-    }, 1000);
+    window.location.replace(url);
   };
 
   const onDelete = async (id: string) => {

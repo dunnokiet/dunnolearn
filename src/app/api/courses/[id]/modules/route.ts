@@ -23,7 +23,7 @@ export async function POST(req: Request, { params }: { params: { id: any } }) {
             return new NextResponse("Unthorized", { status: 401 })
 
         const lastModule = await db.query.modules.findFirst({
-            where: eq(courses.id, params.id),
+            where: eq(modules.courseId, params.id),
             orderBy: [desc(modules.order)],
         });
 

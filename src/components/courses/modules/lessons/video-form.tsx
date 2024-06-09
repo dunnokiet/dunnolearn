@@ -16,6 +16,7 @@ import { FileUpload } from "../../file-upload";
 import { Label } from "@/components/ui/label";
 import { VideoIcon } from "lucide-react";
 import Video from "next-video";
+import Player from "next-video/player";
 
 const formSchema = z.object({
   videoURL: z.string().min(1),
@@ -111,7 +112,7 @@ export default function VideoForm({
           </div>
         ) : (
           <div className="relative aspect-video mt-2">
-            <Video src={lesson.videoURL} />
+            <Player src={lesson.videoURL} />
           </div>
         ))}
       {isEdditing && (

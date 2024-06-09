@@ -22,10 +22,11 @@ export async function POST(req: Request, { params }: { params: { id: any, module
         if (!course)
             return new NextResponse("Unthorized", { status: 401 })
 
-        const lastLesson = await db.query.modules.findFirst({
-            where: eq(courses.id, params.id),
-            orderBy: [desc(modules.order)],
+        const lastLesson = await db.query.lessons.findFirst({
+            where: eq(lessons.moduleId, params.moduleId),
+            orderBy: [desc(lessons.order)],
         });
+
 
         const newOrder = lastLesson ? lastLesson?.order! + 1 : 1;
 

@@ -32,6 +32,7 @@ import ImageForm from "./image-form";
 import CategoryForm from "./category-form";
 import AttachmentForm from "./attachment-form";
 import ModuleForm from "./module-form";
+import { Suspense } from "react";
 
 export function CustomizeCourse({ course }: { course: any }) {
   return (
@@ -41,8 +42,10 @@ export function CustomizeCourse({ course }: { course: any }) {
           <CardTitle>Customize</CardTitle>
           <CardDescription>Modify courses</CardDescription>
         </CardHeader>
-        <ModuleForm course={course} />
-        <AttachmentForm course={course} />
+        <Suspense>
+          <ModuleForm course={course} />
+          <AttachmentForm course={course} />
+        </Suspense>
       </Card>
     </div>
   );

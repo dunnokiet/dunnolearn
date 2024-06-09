@@ -20,6 +20,30 @@ export const courses = pgTable('courses', {
     categoryId: uuid('categoryId').references(() => categories.id)
 });
 
+export const lecturers = pgTable('lecturers', {
+    id: uuid('id').primaryKey().defaultRandom(),
+    fullName: text("fullName"),
+});
+
+export const instructors = pgTable('instructors', {
+    courseId: uuid('courseId').references(() => courses.id),
+    lecturerId: uuid('lecturerId').references(() => lecturers.id),
+}, (table) => {
+    return {
+        pk: primaryKey({ columns: [table.courseId, table.lecturerId] }),
+    }
+})
+
+export const enrolments = pgTable('enrolments', {
+    userId: uuid('userId').references(() => users.id, { onDelete: 'cascade' }),
+    courseId: uuid('courseId').references(() => courses.id, { onDelete: 'cascade' }),
+    enrolment_date: timestamp('enrolment_date').defaultNow(),
+}, (table) => {
+    return {
+        pk: primaryKey({ columns: [table.userId, table.courseId] }),
+    }
+})
+
 export const categories = pgTable('categories', {
     id: uuid('id').primaryKey().defaultRandom(),
     name: text('name').unique(),
@@ -53,7 +77,7 @@ export const lessons = pgTable('lessons', {
     moduleId: uuid('moduleId').references(() => modules.id, { onDelete: 'cascade' }),
 })
 
-export const users_process = pgTable('users_process', {
+export const users_progress = pgTable('users_progress', {
     userId: uuid('userId').references(() => users.id),
     lessonId: uuid('lessonId').references(() => lessons.id),
     isCompleted: boolean('isCompleted').default(false),
@@ -65,13 +89,16 @@ export const users_process = pgTable('users_process', {
     }
 })
 
-export const usersRelations = relations(courses, ({ many }) => ({
+export const usersRelations = relations(users, ({ many }) => ({
     courses: many(courses),
+    enrolments: many(enrolments),
+    users_progress: many(users_progress),
 }));
 
 export const couresRelations = relations(courses, ({ one, many }) => ({
     attachments: many(attachments),
     modules: many(modules),
+    enrolments: many(enrolments),
 
     users: one(users, {
         fields: [courses.userId],
@@ -80,6 +107,17 @@ export const couresRelations = relations(courses, ({ one, many }) => ({
     categories: one(categories, {
         fields: [courses.categoryId],
         references: [categories.id],
+    }),
+}));
+
+export const enrolmentsRelations = relations(enrolments, ({ one }) => ({
+    users: one(users, {
+        fields: [enrolments.userId],
+        references: [users.id],
+    }),
+    courses: one(courses, {
+        fields: [enrolments.courseId],
+        references: [courses.id],
     }),
 }));
 
@@ -103,124 +141,26 @@ export const modulesRelations = relations(modules, ({ one, many }) => ({
 }));
 
 export const lessonsRelations = relations(lessons, ({ one, many }) => ({
-    users_process: many(users_process),
+    users_progress: many(users_progress),
     modules: one(modules, {
         fields: [lessons.moduleId],
         references: [modules.id],
     }),
 }));
 
-export const usersLessonRelations = relations(users_process, ({ one }) => ({
+export const usersProgressRelations = relations(users_progress, ({ one }) => ({
+    users: one(users, {
+        fields: [users_progress.userId],
+        references: [users.id],
+    }),
     lessons: one(lessons, {
-        fields: [users_process.lessonId],
+        fields: [users_progress.lessonId],
         references: [lessons.id],
     }),
 }));
 
-
 export type SelectCourse = typeof courses.$inferSelect;
 export type SelectCategory = typeof categories.$inferSelect;
-
-
-// // This is your Prisma schema file,
-// // learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// generator client {
-//   provider = "prisma-client-js"
-// }
-
-// datasource db {
-//   provider = "postgresql"
-//   url      = env("DATABASE_URL")
-//   directUrl = env("DIRECT_URL")
-//   relationMode = "prisma"
-// }
-
-// model Course {
-//   id        String @id @default(uuid())
-//   userId    String
-//   title     String @db.Text
-//   description String? @db.Text
-//   imageUrl String? @db.Text
-//   price Float?
-//   isPublished Boolean @default(false)
-
-//   categoryId String?
-//   category Category? @relation(fields: [categoryId], references: [id])
-
-//   chapters Chapter[]
-//   attachments Attachment[]
-//   purchases Purchase[]
-
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-
-//   @@index([categoryId])
-// }
-
-// model Category {
-//   id        String @id @default(uuid())
-//   name      String @unique
-//   courses Course[]
-// }
-
-// model Attachment {
-//   id        String @id @default(uuid())
-//   name      String 
-//   url       String @db.Text
-
-//   courseId  String
-//   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-
-//   @@index([courseId])
-// }
-
-// model Chapter{
-//   id        String @id @default(uuid())
-//   title     String 
-//   description String? @db.Text
-//   videoUrl String? @db.Text
-//   position Int
-//   isPublished Boolean @default(false)
-//   isFree Boolean @default(false)
-
-//   muxData MuxData?
-
-//   courseId  String
-//   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-
-//   userProgress UserProgress[]
-
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-
-//   @@index([courseId])
-// }
-
-// model MuxData {
-//   id        String @id @default(uuid())
-//   assetId String
-//   playbackId String?
-
-//   chapterId String @unique
-//   chapter Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade) 
-// }
-
-// model UserProgress {
-//   id        String @id @default(uuid())
-//   userId    String
-
-//   chapterId String
-//   chapter Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
-
-//   isCompleted Boolean @default(false)
-
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-
-//   @@index([chapterId])
-//   @@unique([userId, chapterId])
-// }
+export type SelectModule = typeof modules.$inferSelect;
+export type SelectLesson = typeof lessons.$inferSelect;
+export type SelectAttachment = typeof attachments.$inferSelect;
