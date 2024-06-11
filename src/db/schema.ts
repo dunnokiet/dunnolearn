@@ -3,9 +3,17 @@ import { relations } from 'drizzle-orm';
 
 const authSchema = pgSchema('auth');
 
-export const users = authSchema.table('users', {
+const auth_users = authSchema.table('users', {
     id: uuid('id').primaryKey(),
-    email: varchar('email'),
+});
+
+export const users = pgTable('users', {
+    id: uuid('id').primaryKey().references(() => auth_users.id, { onDelete: 'cascade' }),
+    email: text('email'),
+    firstName: text('firstName'),
+    lastName: text('lastName'),
+    role: text('role').default("student"),
+    joinedAt: timestamp('joined_at').defaultNow(),
 });
 
 export const courses = pgTable('courses', {
@@ -15,8 +23,8 @@ export const courses = pgTable('courses', {
     description: text('description'),
     imageURL: text('imageURL'),
     isPublished: boolean('isPublished').default(false),
-    createdAt: timestamp('created_at').defaultNow(),
-    updatedAt: timestamp('updated_at').$onUpdate(() => new Date()),
+    createdAt: timestamp('createdAt').defaultNow(),
+    updatedAt: timestamp('updatedAt').$onUpdate(() => new Date()),
     categoryId: uuid('categoryId').references(() => categories.id)
 });
 
@@ -26,8 +34,8 @@ export const lecturers = pgTable('lecturers', {
 });
 
 export const instructors = pgTable('instructors', {
-    courseId: uuid('courseId').references(() => courses.id),
-    lecturerId: uuid('lecturerId').references(() => lecturers.id),
+    courseId: uuid('courseId').references(() => courses.id, { onDelete: 'cascade' }),
+    lecturerId: uuid('lecturerId').references(() => lecturers.id, { onDelete: 'cascade' }),
 }, (table) => {
     return {
         pk: primaryKey({ columns: [table.courseId, table.lecturerId] }),
@@ -37,7 +45,7 @@ export const instructors = pgTable('instructors', {
 export const enrolments = pgTable('enrolments', {
     userId: uuid('userId').references(() => users.id, { onDelete: 'cascade' }),
     courseId: uuid('courseId').references(() => courses.id, { onDelete: 'cascade' }),
-    enrolment_date: timestamp('enrolment_date').defaultNow(),
+    EnrolmentDate: timestamp('EnrolmentDate').defaultNow(),
 }, (table) => {
     return {
         pk: primaryKey({ columns: [table.userId, table.courseId] }),
@@ -53,8 +61,8 @@ export const attachments = pgTable('attachments', {
     id: uuid('id').primaryKey().defaultRandom(),
     name: text('name').unique(),
     URL: text('URL'),
-    createdAt: timestamp('created_at').defaultNow(),
-    updatedAt: timestamp('updated_at').$onUpdate(() => new Date()),
+    createdAt: timestamp('createdAt').defaultNow(),
+    updatedAt: timestamp('updatedAt').$onUpdate(() => new Date()),
     courseId: uuid('courseId').references(() => courses.id, { onDelete: 'cascade' }),
 });
 
@@ -63,7 +71,7 @@ export const modules = pgTable('modules', {
     title: text('title'),
     description: text('description'),
     order: integer('order'),
-    isPublished: boolean('isPublished').default(false),
+    isPublished: boolean('isPublished').default(true),
     courseId: uuid('courseId').references(() => courses.id, { onDelete: 'cascade' }),
 })
 
@@ -73,7 +81,7 @@ export const lessons = pgTable('lessons', {
     description: text('description'),
     videoURL: text('videoURL'),
     order: integer('order'),
-    isPublished: boolean('isPublished').default(false),
+    isPublished: boolean('isPublished').default(true),
     moduleId: uuid('moduleId').references(() => modules.id, { onDelete: 'cascade' }),
 })
 
@@ -81,8 +89,8 @@ export const users_progress = pgTable('users_progress', {
     userId: uuid('userId').references(() => users.id),
     lessonId: uuid('lessonId').references(() => lessons.id),
     isCompleted: boolean('isCompleted').default(false),
-    createdAt: timestamp('created_at').defaultNow(),
-    updatedAt: timestamp('updated_at').$onUpdate(() => new Date()),
+    createdAt: timestamp('createdAt').defaultNow(),
+    updatedAt: timestamp('updatedAt').$onUpdate(() => new Date()),
 }, (table) => {
     return {
         pk: primaryKey({ columns: [table.userId, table.lessonId] }),

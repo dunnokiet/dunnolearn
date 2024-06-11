@@ -29,12 +29,16 @@ import {
 const formSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
+  firstName: z.string(),
+  lastName: z.string(),
 });
 
 export default function SignupForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      firstName: "",
+      lastName: "",
       email: "",
       password: "",
     },
@@ -57,6 +61,36 @@ export default function SignupForm() {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className="grid gap-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="firstName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="grid gap-2">
+                          <FormLabel>First name</FormLabel>
+                          <FormControl>
+                            <Input {...field} required />
+                          </FormControl>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="lastName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="grid gap-2">
+                          <FormLabel>Last name</FormLabel>
+                          <FormControl>
+                            <Input {...field} required />
+                          </FormControl>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                </div>
                 <FormField
                   control={form.control}
                   name="email"

@@ -3,6 +3,10 @@ import { redirect } from "next/navigation";
 import { eq, asc, desc, and } from "drizzle-orm";
 import { courses, categories, attachments, modules, users } from "@/db/schema";
 import { createClient } from "@/lib/supabase/server";
+import { Button } from "@/components/ui/button";
+import { File } from "lucide-react";
+import { title } from "process";
+import Download from "@/components/courses/learn/attachments-download";
 
 export default async function Page({
   params,
@@ -23,28 +27,26 @@ export default async function Page({
       modules: {
         where: eq(modules.isPublished, true),
       },
+      attachments: true,
     },
   });
 
   if (!course) return redirect("/");
 
   return (
-    <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-6 md:p-8 lg:p-10">
-      <div className="space-y-4">
-        <h2 className="text-lg font-semibold">{course.title}</h2>
-        {/* <div className="space-y-2">
-          {course.modules.map((module) => (
-            <div
-              key={module.id}
-              className="bg-white dark:bg-gray-950 rounded-md p-4"
-            >
-              <h3 className="text-base font-semibold">{module.title}</h3>
-              <p className="text-gray-500 dark:text-gray-400 mt-1">
-                {module.description}
-              </p>
-            </div>
-          ))}
-        </div> */}
+    <div className="px-4 py-12 md:px-6 lg:py-20">
+      <div className="mx-auto max-w-4xl space-y-8">
+        <div className="space-y-4 text-center">
+          <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
+            {course.title}
+          </h1>
+          <p className="text-lg text-gray-500 dark:text-gray-400">
+            {course.description}
+          </p>
+        </div>
+        {course.attachments.length !== 0 && (
+          <Download attachments={course.attachments} />
+        )}
       </div>
     </div>
   );

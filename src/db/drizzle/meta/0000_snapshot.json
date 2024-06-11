@@ -1,5 +1,5 @@
 {
-  "id": "3aedb3b1-47bd-4757-9cdb-d961437f85cb",
+  "id": "1b4a30e8-fb5c-48e4-80e5-25b0e0394406",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -27,15 +27,15 @@
           "primaryKey": false,
           "notNull": false
         },
-        "created_at": {
-          "name": "created_at",
+        "createdAt": {
+          "name": "createdAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
         },
-        "updated_at": {
-          "name": "updated_at",
+        "updatedAt": {
+          "name": "updatedAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
@@ -147,15 +147,15 @@
           "notNull": false,
           "default": false
         },
-        "created_at": {
-          "name": "created_at",
+        "createdAt": {
+          "name": "createdAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
         },
-        "updated_at": {
-          "name": "updated_at",
+        "updatedAt": {
+          "name": "updatedAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
@@ -173,7 +173,6 @@
           "name": "courses_userId_users_id_fk",
           "tableFrom": "courses",
           "tableTo": "users",
-          "schemaTo": "auth",
           "columnsFrom": [
             "userId"
           ],
@@ -216,8 +215,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "enrolment_date": {
-          "name": "enrolment_date",
+        "EnrolmentDate": {
+          "name": "EnrolmentDate",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false,
@@ -230,7 +229,6 @@
           "name": "enrolments_userId_users_id_fk",
           "tableFrom": "enrolments",
           "tableTo": "users",
-          "schemaTo": "auth",
           "columnsFrom": [
             "userId"
           ],
@@ -294,7 +292,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "instructors_lecturerId_lecturers_id_fk": {
@@ -307,7 +305,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -385,7 +383,7 @@
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,
-          "default": false
+          "default": true
         },
         "moduleId": {
           "name": "moduleId",
@@ -447,7 +445,7 @@
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,
-          "default": false
+          "default": true
         },
         "courseId": {
           "name": "courseId",
@@ -475,9 +473,9 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "auth.users": {
+    "public.users": {
       "name": "users",
-      "schema": "auth",
+      "schema": "",
       "columns": {
         "id": {
           "name": "id",
@@ -487,13 +485,54 @@
         },
         "email": {
           "name": "email",
-          "type": "varchar",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "firstName": {
+          "name": "firstName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "lastName": {
+          "name": "lastName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'student'"
+        },
+        "joined_at": {
+          "name": "joined_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "users_id_users_id_fk": {
+          "name": "users_id_users_id_fk",
+          "tableFrom": "users",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -520,15 +559,15 @@
           "notNull": false,
           "default": false
         },
-        "created_at": {
-          "name": "created_at",
+        "createdAt": {
+          "name": "createdAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
         },
-        "updated_at": {
-          "name": "updated_at",
+        "updatedAt": {
+          "name": "updatedAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
@@ -540,7 +579,6 @@
           "name": "users_progress_userId_users_id_fk",
           "tableFrom": "users_progress",
           "tableTo": "users",
-          "schemaTo": "auth",
           "columnsFrom": [
             "userId"
           ],

@@ -29,6 +29,7 @@ import { useToast } from "@/components/ui/use-toast";
 import TitleForm from "./title-form";
 import DescriptionForm from "./description-form";
 import { Suspense } from "react";
+import PublishForm from "./publish-form";
 
 export function EditForm({ myModule }: { myModule: any }) {
   const requiredFields = [myModule.title, myModule.description];
@@ -49,6 +50,7 @@ export function EditForm({ myModule }: { myModule: any }) {
         <Suspense>
           <TitleForm myModule={myModule} />
           <DescriptionForm myModule={myModule} />
+          <PublishForm myModule={myModule} />
         </Suspense>
       </Card>
     </div>

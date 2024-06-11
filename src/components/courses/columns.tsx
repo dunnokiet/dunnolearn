@@ -70,6 +70,29 @@ export const columns: ColumnDef<SelectCourse & any>[] = [
     },
   },
   {
+    accessorKey: "isPublished",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Published
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const isPublished = row.getValue("isPublished") || false;
+
+      return (
+        <Badge className={cn("bg-slate-500", isPublished && "bg-blue-500")}>
+          {isPublished ? "Published" : "Draft"}
+        </Badge>
+      );
+    },
+  },
+  {
     id: "actions",
     cell: function CellComponent({ row }) {
       const course = row.original;

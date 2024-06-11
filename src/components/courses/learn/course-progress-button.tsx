@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { useConfettiStore } from "@/lib/use-confetti-store";
 import { ToastAction } from "@radix-ui/react-toast";
-import { ChevronRight, CircleCheckBig } from "lucide-react";
+import { ChevronRight, CircleCheckBig, Link } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -14,12 +14,14 @@ export default function CourseProgressButton({
   courseId,
   isCompleted,
   nextLessonId,
+  preLessonId,
 }: {
   moduleId: string;
   lessonId: string;
   courseId: string;
   isCompleted?: boolean;
   nextLessonId?: string;
+  preLessonId?: string;
 }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -55,30 +57,13 @@ export default function CourseProgressButton({
   };
 
   return (
-    <div className="flex gap-2">
-      <Button
-        disabled={isLoading}
-        onClick={onClick}
-        type="button"
-        variant={isCompleted ? "outline" : "default"}
-        className="w-full"
-      >
-        {isCompleted ? "Not completed" : "Mark as complete"}
-        <CircleCheckBig />
-      </Button>
-      {nextLessonId && (
-        <Button
-          onClick={() =>
-            router.push(
-              `/courses/learn/${courseId}/module/${moduleId}/lesson/${nextLessonId}/`
-            )
-          }
-          variant="outline"
-        >
-          Next lesson
-          <ChevronRight />
-        </Button>
-      )}
-    </div>
+    <Button
+      disabled={isLoading}
+      onClick={onClick}
+      type="button"
+      variant="outline"
+    >
+      {isCompleted ? "Not completed" : "Mark as Complete"}
+    </Button>
   );
 }

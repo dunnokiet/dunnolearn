@@ -11,6 +11,16 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { unstable_noStore as noStore } from "next/cache";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { CircleUser } from "lucide-react";
+import { signOut } from "@/lib/actions";
 
 export default async function CoursePage() {
   const supabase = createClient();
@@ -22,7 +32,6 @@ export default async function CoursePage() {
   if (!user) return redirect("/");
 
   const data = await db.query.courses.findMany({
-    where: eq(courses.userId, user.id),
     orderBy: [desc(courses.createdAt)],
     with: {
       users: true,
@@ -32,8 +41,23 @@ export default async function CoursePage() {
 
   return (
     <div className="flex flex-col">
-      <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
+      <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6 justify-between">
         <h1 className="text-xl font-semibold">Courses</h1>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="secondary" size="icon" className="rounded-full">
+              <CircleUser className="h-5 w-5" />
+              <span className="sr-only">Toggle user menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <Button onClick={signOut}>Logout</Button>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </header>
       <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
         {data.length <= 0 ? (

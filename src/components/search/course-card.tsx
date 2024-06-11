@@ -1,8 +1,12 @@
 "use client";
 
 import { BookIcon } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { ConsoleLogWriter } from "drizzle-orm";
 
 export function CourseCard({
   id,
@@ -12,6 +16,8 @@ export function CourseCard({
   progress,
   category,
 }: any) {
+  const pathname = usePathname();
+
   return (
     <Link href={`/courses/learn/${id}`}>
       <div className="group hover:shadow-sm transition overflow-hidden border rounded-lg p-3 h-full">
@@ -31,6 +37,9 @@ export function CourseCard({
               </span>
             </div>
           </div>
+          {progress !== null && pathname === "/courses/dashboard" && (
+            <Progress value={progress} className="" />
+          )}
         </div>
       </div>
     </Link>

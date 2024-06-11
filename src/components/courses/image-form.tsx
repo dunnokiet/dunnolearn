@@ -40,9 +40,12 @@ import { FileUpload } from "./file-upload";
 import { Label } from "../ui/label";
 
 const formSchema = z.object({
-  imageURL: z.string().min(1, {
-    message: "Image is required",
-  }),
+  imageURL: z
+    .string()
+    .min(1, {
+      message: "Image is required",
+    })
+    .default(""),
 });
 
 export default function ImageForm({ course }: { course: any }) {

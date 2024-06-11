@@ -1,6 +1,6 @@
 import { attachments, courses, enrolments, modules, lessons, SelectAttachment, SelectLesson, users_progress } from "@/db/schema";
 import { db } from "@/db";
-import { and, arrayContains, desc, eq, ilike, like, or, gt, asc } from "drizzle-orm";
+import { and, arrayContains, desc, eq, ilike, like, or, gt, asc, lt } from "drizzle-orm";
 import { string } from "zod";
 
 interface GetLessonProps {
@@ -39,6 +39,7 @@ export async function getLesson({
 
         let attachment: SelectAttachment[] = [];
         let nextLesson: SelectLesson | undefined = undefined;
+        let preLesson: SelectLesson | undefined = undefined;
 
         if (enrolment) {
             attachment = await db.query.attachments.findMany({
@@ -47,6 +48,11 @@ export async function getLesson({
 
             nextLesson = await db.query.lessons.findFirst({
                 where: and(eq(lessons.moduleId, moduleId), eq(lessons.isPublished, true), gt(lessons.order, lesson?.order!)),
+                orderBy: asc(lessons.order)
+            })
+
+            preLesson = await db.query.lessons.findFirst({
+                where: and(eq(lessons.moduleId, moduleId), eq(lessons.isPublished, true), lt(lessons.order, lesson?.order!)),
                 orderBy: asc(lessons.order)
             })
         }
@@ -62,6 +68,7 @@ export async function getLesson({
             videoURL: lesson.videoURL,
             attachments,
             nextLesson,
+            preLesson,
             user_progess,
             enrolment,
         }
@@ -75,6 +82,7 @@ export async function getLesson({
             videoURL: null,
             attachments: [],
             nextLesson: null,
+            preLesson: null,
             users_progress: null,
             enrolments: null,
         }

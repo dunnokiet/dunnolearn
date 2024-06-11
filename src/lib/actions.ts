@@ -5,13 +5,15 @@ import { redirect } from 'next/navigation'
 
 import { createClient } from '@/lib/supabase/server'
 
-export async function login(formData: any) {
+import { db } from "@/db";
+import { attachments, users_progress, courses, modules, lessons, users } from "@/db/schema";
+import { NextResponse } from "next/server";
+import { eq, and, desc, ConsoleLogWriter } from "drizzle-orm";
 
+export async function login(formData: any) {
 
     const supabase = createClient()
 
-    // type-casting here for convenience
-    // in practice, you should validate your inputs
     const data = {
         email: formData.email,
         password: formData.password,
@@ -27,18 +29,34 @@ export async function login(formData: any) {
     redirect('/')
 }
 
+export async function signOut() {
+    const supabase = createClient()
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+        redirect('/error')
+    }
+
+    revalidatePath('/login', 'layout')
+    redirect('/login')
+}
+
 export async function signup(formData: any) {
     const supabase = createClient()
 
-    // type-casting here for convenience
-    // in practice, you should validate your inputs
     const data = {
         email: formData.email,
-        password: formData.password
+        password: formData.password,
+        user_metadata: {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+        },
+        email_confirm: true,
     }
 
-    const { error } = await supabase.auth.signUp(data)
+    const { error } = await supabase.auth.signUp(data);
 
+    console.log(error);
 
     if (error) {
         redirect('/error')

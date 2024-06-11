@@ -31,6 +31,7 @@ import DescriptionForm from "./description-form";
 import ImageForm from "./image-form";
 import CategoryForm from "./category-form";
 import { Suspense } from "react";
+import PublishForm from "./publish-form";
 
 export function EditForm({ course, options }: { course: any; options: any }) {
   const requiredFields = [
@@ -64,6 +65,7 @@ export function EditForm({ course, options }: { course: any; options: any }) {
               value: option.id,
             }))}
           />
+          <PublishForm course={course} />
         </Suspense>
       </Card>
     </div>

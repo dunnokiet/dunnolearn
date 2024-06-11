@@ -33,6 +33,7 @@ import TitleForm from "./title-form";
 import DescriptionForm from "./description-form";
 import VideoForm from "./video-form";
 import { Suspense } from "react";
+import PublishForm from "./publish-form";
 
 export async function CustomizeLesson({ myModule }: { myModule: any }) {
   const searchParams = useSearchParams();
@@ -53,7 +54,8 @@ export async function CustomizeLesson({ myModule }: { myModule: any }) {
           </CardHeader>
           <Suspense>
             <TitleForm myModule={myModule} lesson={lesson[0]} />
-            {/* <DescriptionForm myModule={myModule} lesson={lesson[0]} /> */}
+            <DescriptionForm myModule={myModule} lesson={lesson[0]} />
+            <PublishForm myModule={myModule} lesson={lesson[0]} />
             <VideoForm myModule={myModule} lesson={lesson[0]} />
           </Suspense>
         </Card>
