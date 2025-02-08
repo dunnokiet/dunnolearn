@@ -1,7 +1,7 @@
 # Hệ Thống Quản Lý Khóa Học Trực Tuyến
 
 ## Giới Thiệu
-Dự án Quản Lý Khóa Học Trực Tuyến là một nền tảng hỗ trợ giảng dạy và học tập trực tuyến, giúp người dùng dễ dàng tiếp cận các khóa học và quản lý tiến trình học tập.
+Dự án Quản Lý Khóa Học Trực Tuyến là một nền tảng hỗ trợ giảng dạy và học tập trực tuyến, giúp người dùng dễ dàng tiếp cận các khóa học và quản lý tiến trình học tập. Trong đó trang web sẽ tổng hợp các khóa học phổ biến đã mua hoặc miễn phí sau đó chia sẻ cho các học viên.
 
 ### Thành Viên Nhóm
 - **Lê Minh Khôi** - MSSV: 22520698
