@@ -47,7 +47,7 @@ Dự án Quản Lý Khóa Học Trực Tuyến là một nền tảng hỗ trợ
 ![Image](https://github.com/user-attachments/assets/89cf0303-30b7-45de-9cf6-02fb32b801c8)
 
 ## Hướng Phát Triển
-- **Tích hợp AI** để gợi ý khóa học dựa trên sở thích.
+- **Tích hợp AI** để gợi ý khóa học dựa trên sở thích, chatbot hỗ trợ.
 - **Nâng cấp giao diện người dùng** để trải nghiệm tốt hơn.
 - **Bổ sung hệ thống chứng chỉ** khi hoàn thành khóa học.
 - **Xây dựng hệ thống thanh toán** cho các khóa học nâng cao.
